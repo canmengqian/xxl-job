@@ -29,6 +29,7 @@ public class XxlJobFileAppender {
 	 *
 	 */
 	private static String logBasePath = "/data/applogs/xxl-job/jobhandler";
+	// 脚本执行日志
 	private static String glueSrcPath = logBasePath.concat("/gluesource");
 	public static void initLogPath(String logPath){
 		// init
@@ -57,6 +58,7 @@ public class XxlJobFileAppender {
 	}
 
 	/**
+	 * 创建绝对路径日志文件
 	 * log filename, like "logPath/yyyy-MM-dd/9999.log"
 	 *
 	 * @param triggerDate
@@ -65,7 +67,7 @@ public class XxlJobFileAppender {
 	 */
 	public static String makeLogFileName(Date triggerDate, long logId) {
 
-		// filePath/yyyy-MM-dd
+		// filePath/yyyy-MM-dd 按日期创建文件夹
 		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");	// avoid concurrent problem, can not be static
 		File logFilePath = new File(getLogPath(), sdf.format(triggerDate));
 		if (!logFilePath.exists()) {
@@ -81,6 +83,7 @@ public class XxlJobFileAppender {
 	}
 
 	/**
+	 * 追加写入日志
 	 * append log
 	 *
 	 * @param logFileName
@@ -94,6 +97,7 @@ public class XxlJobFileAppender {
 		}
 		File logFile = new File(logFileName);
 
+		// 创建业务日志
 		if (!logFile.exists()) {
 			try {
 				logFile.createNewFile();
@@ -131,7 +135,7 @@ public class XxlJobFileAppender {
 
 	/**
 	 * support read log-file
-	 *
+	 *读取日志文件
 	 * @param logFileName
 	 * @return log content
 	 */
@@ -147,7 +151,7 @@ public class XxlJobFileAppender {
             return new LogResult(fromLineNum, 0, "readLog fail, logFile not exists", true);
 		}
 
-		// read file
+		// read file 从起始行读到文件结尾
 		StringBuffer logContentBuffer = new StringBuffer();
 		int toLineNum = 0;
 		LineNumberReader reader = null;
@@ -187,6 +191,7 @@ public class XxlJobFileAppender {
 	}
 
 	/**
+	 * 读取所有行
 	 * read log data
 	 * @param logFile
 	 * @return log line content

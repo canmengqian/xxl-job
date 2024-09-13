@@ -29,7 +29,7 @@ public class ExecutorBizImpl implements ExecutorBiz {
 
     @Override
     public ReturnT<String> idleBeat(IdleBeatParam idleBeatParam) {
-
+        // 向服务端报送心跳结果
         // isRunningOrHasQueue
         boolean isRunningOrHasQueue = false;
         JobThread jobThread = XxlJobExecutor.loadJobThread(idleBeatParam.getJobId());
@@ -46,18 +46,21 @@ public class ExecutorBizImpl implements ExecutorBiz {
     @Override
     public ReturnT<String> run(TriggerParam triggerParam) {
         // load old：jobHandler + jobThread
+        // 从容器中根据jobId获取对应的jobThread
         JobThread jobThread = XxlJobExecutor.loadJobThread(triggerParam.getJobId());
+        // 从线程中获取指定的jobHandler
         IJobHandler jobHandler = jobThread!=null?jobThread.getHandler():null;
         String removeOldReason = null;
 
         // valid：jobHandler + jobThread
         GlueTypeEnum glueTypeEnum = GlueTypeEnum.match(triggerParam.getGlueType());
         if (GlueTypeEnum.BEAN == glueTypeEnum) {
-
+            // 取出执行器
             // new jobhandler
             IJobHandler newJobHandler = XxlJobExecutor.loadJobHandler(triggerParam.getExecutorHandler());
 
             // valid old jobThread
+            // 线程中的执行器和按name取出的执行器不一致就kill掉
             if (jobThread!=null && jobHandler != newJobHandler) {
                 // change handler, need kill old thread
                 removeOldReason = "change jobhandler or glue type, and terminate the old job thread.";
@@ -66,7 +69,7 @@ public class ExecutorBizImpl implements ExecutorBiz {
                 jobHandler = null;
             }
 
-            // valid handler
+            // valid handler, 判断执行器是否可以执行
             if (jobHandler == null) {
                 jobHandler = newJobHandler;
                 if (jobHandler == null) {
@@ -97,7 +100,9 @@ public class ExecutorBizImpl implements ExecutorBiz {
                     return new ReturnT<String>(ReturnT.FAIL_CODE, e.getMessage());
                 }
             }
-        } else if (glueTypeEnum!=null && glueTypeEnum.isScript()) {
+        }
+        // script模式
+        else if (glueTypeEnum!=null && glueTypeEnum.isScript()) {
 
             // valid old jobThread
             if (jobThread != null &&
@@ -122,12 +127,14 @@ public class ExecutorBizImpl implements ExecutorBiz {
         if (jobThread != null) {
             ExecutorBlockStrategyEnum blockStrategy = ExecutorBlockStrategyEnum.match(triggerParam.getExecutorBlockStrategy(), null);
             if (ExecutorBlockStrategyEnum.DISCARD_LATER == blockStrategy) {
-                // discard when running
+                // discard when running 如果job线程已经在执行了,那么此次请求失败,不进行调度
                 if (jobThread.isRunningOrHasQueue()) {
                     return new ReturnT<String>(ReturnT.FAIL_CODE, "block strategy effect："+ExecutorBlockStrategyEnum.DISCARD_LATER.getTitle());
                 }
-            } else if (ExecutorBlockStrategyEnum.COVER_EARLY == blockStrategy) {
-                // kill running jobThread
+            }
+            // 不推荐使用
+            else if (ExecutorBlockStrategyEnum.COVER_EARLY == blockStrategy) {
+                // kill running jobThread kill掉正在运行的线程
                 if (jobThread.isRunningOrHasQueue()) {
                     removeOldReason = "block strategy effect：" + ExecutorBlockStrategyEnum.COVER_EARLY.getTitle();
 
@@ -138,12 +145,12 @@ public class ExecutorBizImpl implements ExecutorBiz {
             }
         }
 
-        // replace thread (new or exists invalid)
+        // replace thread (new or exists invalid) 重新注册一个job线程
         if (jobThread == null) {
             jobThread = XxlJobExecutor.registJobThread(triggerParam.getJobId(), jobHandler, removeOldReason);
         }
 
-        // push data to queue
+        // push data to queue 放入调度队列中
         ReturnT<String> pushResult = jobThread.pushTriggerQueue(triggerParam);
         return pushResult;
     }

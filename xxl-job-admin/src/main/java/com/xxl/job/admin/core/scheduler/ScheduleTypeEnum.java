@@ -10,11 +10,14 @@ public enum ScheduleTypeEnum {
     NONE(I18nUtil.getString("schedule_type_none")),
 
     /**
+     * cron表达式
      * schedule by cron
      */
     CRON(I18nUtil.getString("schedule_type_cron")),
 
+
     /**
+     * 固定秒数
      * schedule by fixed rate (in seconds)
      */
     FIX_RATE(I18nUtil.getString("schedule_type_fix_rate")),

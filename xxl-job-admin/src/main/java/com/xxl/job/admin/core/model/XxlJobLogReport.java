@@ -6,10 +6,13 @@ public class XxlJobLogReport {
 
     private int id;
 
+    // 触发时间
     private Date triggerDay;
-
+    // 运行中的个数
     private int runningCount;
+    // 成功的个数
     private int sucCount;
+    // 失败的个数
     private int failCount;
 
     public int getId() {

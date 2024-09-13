@@ -71,6 +71,14 @@ public class UserController {
         return maps;
     }
 
+    /**
+     * 添加用户
+     * 1. username length limit 4-20
+     * 2. password length limit 4-20
+     * 3. password 使用md5 加密
+     * @param xxlJobUser
+     * @return
+     */
     @RequestMapping("/add")
     @ResponseBody
     @PermissionLimit(adminuser = true)

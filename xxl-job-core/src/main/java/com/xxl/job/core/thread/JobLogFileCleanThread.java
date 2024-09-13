@@ -89,6 +89,7 @@ public class JobLogFileCleanThread {
                     }
 
                     try {
+                        // 休眠一天?
                         TimeUnit.DAYS.sleep(1);
                     } catch (InterruptedException e) {
                         if (!toStop) {

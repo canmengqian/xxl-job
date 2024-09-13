@@ -24,8 +24,9 @@ public class JobRegistryHelper {
 	public static JobRegistryHelper getInstance(){
 		return instance;
 	}
-
+	// ---------------------- monitor ----------------------
 	private ThreadPoolExecutor registryOrRemoveThreadPool = null;
+	// 注册监听线程
 	private Thread registryMonitorThread;
 	private volatile boolean toStop = false;
 
@@ -58,18 +59,21 @@ public class JobRegistryHelper {
 			public void run() {
 				while (!toStop) {
 					try {
-						// auto registry group
+						// auto registry group 获取自动注册的执行器信息
 						List<XxlJobGroup> groupList = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().findByAddressType(0);
 						if (groupList!=null && !groupList.isEmpty()) {
 
 							// remove dead address (admin/executor)
+							// 被认定为死亡的 执行器
 							List<Integer> ids = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findDead(RegistryConfig.DEAD_TIMEOUT, new Date());
+							// 从执行器注册表里移除
 							if (ids!=null && ids.size()>0) {
 								XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().removeDead(ids);
 							}
 
 							// fresh online address (admin/executor)
 							HashMap<String, List<String>> appAddressMap = new HashMap<String, List<String>>();
+							/// 获取所有注册信息
 							List<XxlJobRegistry> list = XxlJobAdminConfig.getAdminConfig().getXxlJobRegistryDao().findAll(RegistryConfig.DEAD_TIMEOUT, new Date());
 							if (list != null) {
 								for (XxlJobRegistry item: list) {
@@ -113,6 +117,7 @@ public class JobRegistryHelper {
 						}
 					}
 					try {
+						// 默认每30秒刷新一次
 						TimeUnit.SECONDS.sleep(RegistryConfig.BEAT_TIMEOUT);
 					} catch (InterruptedException e) {
 						if (!toStop) {

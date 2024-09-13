@@ -1,7 +1,8 @@
 package com.xxl.job.core.context;
 
 /**
- * xxl-job context
+ * xxl-job 上下文
+ * 包含作业的 jobId、jobParam、jobLogFileName、shardIndex、shardTotal、handleCode、handleMsg
  *
  * @author xuxueli 2020-05-21
  * [Dear hj]

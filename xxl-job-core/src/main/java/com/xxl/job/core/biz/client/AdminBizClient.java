@@ -10,7 +10,7 @@ import java.util.List;
 
 /**
  * admin api test
- *
+ *客户端 管理,向服务端注册,移除自身,获取回调信息
  * @author xuxueli 2017-07-28 22:14:52
  */
 public class AdminBizClient implements AdminBiz {

@@ -30,6 +30,7 @@ import java.util.concurrent.*;
 public class EmbedServer {
     private static final Logger logger = LoggerFactory.getLogger(EmbedServer.class);
 
+    // 执行器
     private ExecutorBiz executorBiz;
     private Thread thread;
 
@@ -38,7 +39,7 @@ public class EmbedServer {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                // param
+                // param 创建事件组
                 EventLoopGroup bossGroup = new NioEventLoopGroup();
                 EventLoopGroup workerGroup = new NioEventLoopGroup();
                 ThreadPoolExecutor bizThreadPool = new ThreadPoolExecutor(
@@ -74,9 +75,9 @@ public class EmbedServer {
                                             .addLast(new EmbedHttpServerHandler(executorBiz, accessToken, bizThreadPool));
                                 }
                             })
-                            .childOption(ChannelOption.SO_KEEPALIVE, true);
+                            .childOption(ChannelOption.SO_KEEPALIVE, true);// 长连接
 
-                    // bind
+                    // bind 异步服务
                     ChannelFuture future = bootstrap.bind(port).sync();
 
                     logger.info(">>>>>>>>>>> xxl-job remoting server start success, nettype = {}, port = {}", EmbedServer.class, port);
@@ -154,7 +155,7 @@ public class EmbedServer {
             bizThreadPool.execute(new Runnable() {
                 @Override
                 public void run() {
-                    // do invoke
+                    // do invoke 处理业务请求
                     Object responseObj = process(httpMethod, uri, requestData, accessTokenReq);
 
                     // to json
@@ -180,7 +181,7 @@ public class EmbedServer {
                 return new ReturnT<String>(ReturnT.FAIL_CODE, "The access token is wrong.");
             }
 
-            // services mapping
+            // services mapping 客户端执行的指令
             try {
                 switch (uri) {
                     case "/beat":

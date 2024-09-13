@@ -11,8 +11,11 @@ public class LogResult implements Serializable {
     public LogResult() {
     }
     public LogResult(int fromLineNum, int toLineNum, String logContent, boolean isEnd) {
+        // 起始行数
         this.fromLineNum = fromLineNum;
+        // 结束行数
         this.toLineNum = toLineNum;
+        // 日志内容
         this.logContent = logContent;
         this.isEnd = isEnd;
     }

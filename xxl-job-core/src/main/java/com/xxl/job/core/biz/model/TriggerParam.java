@@ -7,19 +7,28 @@ import java.io.Serializable;
  */
 public class TriggerParam implements Serializable{
     private static final long serialVersionUID = 42L;
-
+    // 作业id
     private int jobId;
 
+    // 执行器任务handler
     private String executorHandler;
+    // 执行器任务参数
     private String executorParams;
+    // 执行器任务阻塞策略
     private String executorBlockStrategy;
+    // 任务执行超时时间
     private int executorTimeout;
 
+    // 日志id
     private long logId;
+    // 日志日期时间
     private long logDateTime;
 
+    // 脚本类型
     private String glueType;
+    // 脚本源码
     private String glueSource;
+    // 脚本更新时间
     private long glueUpdatetime;
 
     private int broadcastIndex;

@@ -40,6 +40,15 @@ public class JobGroupController {
 		return "jobgroup/jobgroup.index";
 	}
 
+	/**
+	 * 获取应用列表
+	 * @param request
+	 * @param start
+	 * @param length
+	 * @param appname
+	 * @param title
+	 * @return
+	 */
 	@RequestMapping("/pageList")
 	@ResponseBody
 	@PermissionLimit(adminuser = true)
@@ -60,6 +69,15 @@ public class JobGroupController {
 		return maps;
 	}
 
+	/**
+	 * 保存应用信息
+	 * 名称校验 1. 不能小于4 和大于64个字符
+	 * 2. 不能包含特殊符号
+	 * 3. 标题不能为空
+	 * 4. 执行器地址不能为空
+	 * @param xxlJobGroup
+	 * @return
+	 */
 	@RequestMapping("/save")
 	@ResponseBody
 	@PermissionLimit(adminuser = true)

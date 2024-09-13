@@ -60,6 +60,7 @@ public class JobCodeController {
 		if (glueRemark==null) {
 			return new ReturnT<String>(500, (I18nUtil.getString("system_please_input") + I18nUtil.getString("jobinfo_glue_remark")) );
 		}
+		// glue标记
 		if (glueRemark.length()<4 || glueRemark.length()>100) {
 			return new ReturnT<String>(500, I18nUtil.getString("jobinfo_glue_remark_limit"));
 		}
@@ -85,8 +86,9 @@ public class JobCodeController {
 
 		xxlJobLogGlue.setAddTime(new Date());
 		xxlJobLogGlue.setUpdateTime(new Date());
+		// 保存 新代码
 		xxlJobLogGlueDao.save(xxlJobLogGlue);
-
+		// 异常30个版本前的代码
 		// remove code backup more than 30
 		xxlJobLogGlueDao.removeOld(exists_jobInfo.getId(), 30);
 

@@ -102,6 +102,7 @@ public class XxlJobRemotingUtil {
             if (requestObj != null) {
                 String requestBody = GsonTool.toJson(requestObj);
 
+                // 获取响应
                 DataOutputStream dataOutputStream = new DataOutputStream(connection.getOutputStream());
                 dataOutputStream.write(requestBody.getBytes("UTF-8"));
                 dataOutputStream.flush();
@@ -118,6 +119,7 @@ public class XxlJobRemotingUtil {
             // valid StatusCode
             int statusCode = connection.getResponseCode();
             if (statusCode != 200) {
+                // 远程调用失败
                 return new ReturnT<String>(ReturnT.FAIL_CODE, "xxl-job remoting fail, StatusCode("+ statusCode +") invalid. for url : " + url);
             }
 
@@ -132,6 +134,7 @@ public class XxlJobRemotingUtil {
 
             // parse returnT
             try {
+                // 响应转目标对象
                 ReturnT returnT = GsonTool.fromJson(resultJson, ReturnT.class, returnTargClassOfT);
                 return returnT;
             } catch (Exception e) {

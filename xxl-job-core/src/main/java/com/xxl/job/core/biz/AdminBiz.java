@@ -12,7 +12,7 @@ import java.util.List;
 public interface AdminBiz {
 
 
-    // ---------------------- callback ----------------------
+    // 回调处理---------------------- callback ----------------------
 
     /**
      * callback
@@ -23,7 +23,7 @@ public interface AdminBiz {
     public ReturnT<String> callback(List<HandleCallbackParam> callbackParamList);
 
 
-    // ---------------------- registry ----------------------
+    // 注册执行器/job?---------------------- registry ----------------------
 
     /**
      * registry
@@ -34,6 +34,7 @@ public interface AdminBiz {
     public ReturnT<String> registry(RegistryParam registryParam);
 
     /**
+     * 移除执行器?
      * registry remove
      *
      * @param registryParam

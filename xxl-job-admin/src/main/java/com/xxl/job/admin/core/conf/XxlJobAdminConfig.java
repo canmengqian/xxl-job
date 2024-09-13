@@ -36,12 +36,15 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
     public void afterPropertiesSet() throws Exception {
         adminConfig = this;
 
+        // 实例化调度器
         xxlJobScheduler = new XxlJobScheduler();
+        // 初始化调度器
         xxlJobScheduler.init();
     }
 
     @Override
     public void destroy() throws Exception {
+        // 销毁调度器
         xxlJobScheduler.destroy();
     }
 
@@ -52,18 +55,22 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
     @Value("${xxl.job.i18n}")
     private String i18n;
 
+    // token
     @Value("${xxl.job.accessToken}")
     private String accessToken;
 
+    // 通知邮件
     @Value("${spring.mail.from}")
     private String emailFrom;
 
+    // 快速调度池
     @Value("${xxl.job.triggerpool.fast.max}")
     private int triggerPoolFastMax;
 
+    // 慢调度池
     @Value("${xxl.job.triggerpool.slow.max}")
     private int triggerPoolSlowMax;
-
+    // 日志保留天数
     @Value("${xxl.job.logretentiondays}")
     private int logretentiondays;
 
@@ -72,6 +79,7 @@ public class XxlJobAdminConfig implements InitializingBean, DisposableBean {
     @Resource
     private XxlJobLogDao xxlJobLogDao;
     @Resource
+    // 日志详情
     private XxlJobInfoDao xxlJobInfoDao;
     @Resource
     private XxlJobRegistryDao xxlJobRegistryDao;

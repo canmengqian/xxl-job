@@ -46,7 +46,7 @@ public class GlueFactory {
 	public IJobHandler loadNewInstance(String codeSource) throws Exception{
 		if (codeSource!=null && codeSource.trim().length()>0) {
 			Class<?> clazz = getCodeSourceClass(codeSource);
-			if (clazz != null) {
+				if (clazz != null) {
 				Object instance = clazz.newInstance();
 				if (instance!=null) {
 					if (instance instanceof IJobHandler) {
@@ -67,6 +67,7 @@ public class GlueFactory {
 			byte[] md5 = MessageDigest.getInstance("MD5").digest(codeSource.getBytes());
 			String md5Str = new BigInteger(1, md5).toString(16);
 
+			// 是已经缓存过groovy 脚本
 			Class<?> clazz = CLASS_CACHE.get(md5Str);
 			if(clazz == null){
 				clazz = groovyClassLoader.parseClass(codeSource);
@@ -74,6 +75,7 @@ public class GlueFactory {
 			}
 			return clazz;
 		} catch (Exception e) {
+			// 解析groovy脚本
 			return groovyClassLoader.parseClass(codeSource);
 		}
 	}

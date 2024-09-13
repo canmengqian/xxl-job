@@ -14,6 +14,7 @@ import java.io.File;
  */
 public class ScriptJobHandler extends IJobHandler {
 
+    // 作业id、更新时间、脚本、脚本类型
     private int jobId;
     private long glueUpdatetime;
     private String gluesource;
@@ -47,6 +48,7 @@ public class ScriptJobHandler extends IJobHandler {
     @Override
     public void execute() throws Exception {
 
+        // 非脚本模式不做执行
         if (!glueType.isScript()) {
             XxlJobHelper.handleFail("glueType["+ glueType +"] invalid.");
             return;

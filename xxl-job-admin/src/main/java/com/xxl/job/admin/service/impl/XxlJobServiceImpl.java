@@ -35,20 +35,21 @@ public class XxlJobServiceImpl implements XxlJobService {
 	private static Logger logger = LoggerFactory.getLogger(XxlJobServiceImpl.class);
 
 	@Resource
-	private XxlJobGroupDao xxlJobGroupDao;
+	private XxlJobGroupDao xxlJobGroupDao; //应用信息
 	@Resource
-	private XxlJobInfoDao xxlJobInfoDao;
+	private XxlJobInfoDao xxlJobInfoDao; // 作业信息
 	@Resource
-	public XxlJobLogDao xxlJobLogDao;
+	public XxlJobLogDao xxlJobLogDao;// 作业日志信息
 	@Resource
-	private XxlJobLogGlueDao xxlJobLogGlueDao;
+	private XxlJobLogGlueDao xxlJobLogGlueDao;// 作业日志信息
 	@Resource
-	private XxlJobLogReportDao xxlJobLogReportDao;
+	private XxlJobLogReportDao xxlJobLogReportDao; // 作业报告
 	
 	@Override
 	public Map<String, Object> pageList(int start, int length, int jobGroup, int triggerStatus, String jobDesc, String executorHandler, String author) {
 
 		// page list
+		// 作业信息
 		List<XxlJobInfo> list = xxlJobInfoDao.pageList(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
 		int list_count = xxlJobInfoDao.pageListCount(start, length, jobGroup, triggerStatus, jobDesc, executorHandler, author);
 		

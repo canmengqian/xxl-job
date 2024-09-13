@@ -5,6 +5,7 @@ import com.xxl.job.core.handler.IJobHandler;
 
 /**
  * glue job handler
+ * 用于胶水语言 groovy
  *
  * @author xuxueli 2016-5-19 21:05:45
  */

@@ -11,8 +11,11 @@ public class LogParam implements Serializable {
     public LogParam() {
     }
     public LogParam(long logDateTim, long logId, int fromLineNum) {
+        // 日志记录时间
         this.logDateTim = logDateTim;
+        // 日志id
         this.logId = logId;
+        // 起始行数
         this.fromLineNum = fromLineNum;
     }
 

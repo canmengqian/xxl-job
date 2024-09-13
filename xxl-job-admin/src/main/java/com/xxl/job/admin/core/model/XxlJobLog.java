@@ -7,7 +7,7 @@ import java.util.Date;
  * @author xuxueli  2015-12-19 23:19:09
  */
 public class XxlJobLog {
-	
+	// 日志id
 	private long id;
 	
 	// job info
@@ -19,7 +19,7 @@ public class XxlJobLog {
 	private String executorHandler;
 	private String executorParam;
 	private String executorShardingParam;
-	private int executorFailRetryCount;
+	private int executorFailRetryCount;// 重试次数
 	
 	// trigger info
 	private Date triggerTime;

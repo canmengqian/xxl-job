@@ -3,6 +3,7 @@ package com.xxl.job.core.biz.model;
 import java.io.Serializable;
 
 /**
+ * 回调参数
  * Created by xuxueli on 17/3/2.
  */
 public class HandleCallbackParam implements Serializable {
@@ -10,7 +11,7 @@ public class HandleCallbackParam implements Serializable {
 
     private long logId;
     private long logDateTim;
-
+    // 处理后的代码和错误消息
     private int handleCode;
     private String handleMsg;
 

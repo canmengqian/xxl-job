@@ -119,6 +119,12 @@ public class JobLogController {
 		return maps;
 	}
 
+	/**
+	 * 跳转日志详情
+	 * @param id
+	 * @param model
+	 * @return
+	 */
 	@RequestMapping("/logDetailPage")
 	public String logDetailPage(int id, Model model){
 

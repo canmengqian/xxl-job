@@ -33,10 +33,10 @@ public class JobLogReportHelper {
             @Override
             public void run() {
 
-                // last clean log time
+                // last clean log time 上次清理时间
                 long lastCleanLogTime = 0;
 
-
+                // 线程标志未停止一直执行
                 while (!toStop) {
 
                     // 1、log-report refresh: refresh log report in 3 days
@@ -67,7 +67,7 @@ public class JobLogReportHelper {
                             xxlJobLogReport.setRunningCount(0);
                             xxlJobLogReport.setSucCount(0);
                             xxlJobLogReport.setFailCount(0);
-
+                            // 统计某个时间区间内的调度情况
                             Map<String, Object> triggerCountMap = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().findLogReport(todayFrom, todayTo);
                             if (triggerCountMap!=null && triggerCountMap.size()>0) {
                                 int triggerDayCount = triggerCountMap.containsKey("triggerDayCount")?Integer.valueOf(String.valueOf(triggerCountMap.get("triggerDayCount"))):0;
@@ -80,7 +80,7 @@ public class JobLogReportHelper {
                                 xxlJobLogReport.setFailCount(triggerDayCountFail);
                             }
 
-                            // do refresh
+                            // do refresh 更新报告
                             int ret = XxlJobAdminConfig.getAdminConfig().getXxlJobLogReportDao().update(xxlJobLogReport);
                             if (ret < 1) {
                                 XxlJobAdminConfig.getAdminConfig().getXxlJobLogReportDao().save(xxlJobLogReport);

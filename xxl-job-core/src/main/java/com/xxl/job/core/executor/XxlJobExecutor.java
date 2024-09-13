@@ -29,14 +29,14 @@ public class XxlJobExecutor  {
     private static final Logger logger = LoggerFactory.getLogger(XxlJobExecutor.class);
 
     // ---------------------- param ----------------------
-    private String adminAddresses;
+    private String adminAddresses; // admin地址
     private String accessToken;
-    private String appname;
-    private String address;
+    private String appname;// app name
+    private String address;// 应用地址
     private String ip;
     private int port;
-    private String logPath;
-    private int logRetentionDays;
+    private String logPath;// 日志路径
+    private int logRetentionDays;// 日志留存天数
 
     public void setAdminAddresses(String adminAddresses) {
         this.adminAddresses = adminAddresses;
@@ -67,20 +67,22 @@ public class XxlJobExecutor  {
     // ---------------------- start + stop ----------------------
     public void start() throws Exception {
 
+        // 初始化日志路径
         // init logpath
         XxlJobFileAppender.initLogPath(logPath);
 
-        // init invoker, admin-client
+        // init invoker, admin-client 管理端,允许多机器部署,逗号分割
         initAdminBizList(adminAddresses, accessToken);
 
 
-        // init JobLogFileCleanThread
+        // init JobLogFileCleanThread 日志文件清理线程
         JobLogFileCleanThread.getInstance().start(logRetentionDays);
 
-        // init TriggerCallbackThread
+        // init TriggerCallbackThread 触发器回调线程
+        //TODO
         TriggerCallbackThread.getInstance().start();
 
-        // init executor-server
+        // init executor-server 初始化客户端 服务器
         initEmbedServer(address, ip, port, appname, accessToken);
     }
 
@@ -144,6 +146,7 @@ public class XxlJobExecutor  {
 
         // fill ip port
         port = port>0?port: NetUtil.findAvailablePort(9999);
+        // 默认使用自己的ip,本地主机ip
         ip = (ip!=null&&ip.trim().length()>0)?ip: IpUtil.getIp();
 
         // generate address
@@ -209,6 +212,7 @@ public class XxlJobExecutor  {
                     "The correct method format like \" public ReturnT<String> execute(String param) \" .");
         }*/
 
+        //执行方法权限
         executeMethod.setAccessible(true);
 
         // init and destroy
@@ -232,7 +236,7 @@ public class XxlJobExecutor  {
             }
         }
 
-        // registry jobhandler
+        // registry jobhandler 放到内存中
         registJobHandler(name, new MethodJobHandler(bean, executeMethod, initMethod, destroyMethod));
 
     }

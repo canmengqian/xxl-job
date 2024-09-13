@@ -25,7 +25,7 @@ public class ExecutorRegistryThread {
     private volatile boolean toStop = false;
     public void start(final String appname, final String address){
 
-        // valid
+        // valid appname不能为null
         if (appname==null || appname.trim().length()==0) {
             logger.warn(">>>>>>>>>>> xxl-job, executor registry config fail, appname is null.");
             return;
@@ -45,6 +45,7 @@ public class ExecutorRegistryThread {
                         RegistryParam registryParam = new RegistryParam(RegistryConfig.RegistType.EXECUTOR.name(), appname, address);
                         for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
                             try {
+                                // 向admin进行注册
                                 ReturnT<String> registryResult = adminBiz.registry(registryParam);
                                 if (registryResult!=null && ReturnT.SUCCESS_CODE == registryResult.getCode()) {
                                     registryResult = ReturnT.SUCCESS;
@@ -67,6 +68,7 @@ public class ExecutorRegistryThread {
 
                     try {
                         if (!toStop) {
+                            //休眠30秒
                             TimeUnit.SECONDS.sleep(RegistryConfig.BEAT_TIMEOUT);
                         }
                     } catch (InterruptedException e) {

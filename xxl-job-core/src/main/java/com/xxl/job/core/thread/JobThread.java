@@ -27,15 +27,21 @@ import java.util.concurrent.*;
 public class JobThread extends Thread{
 	private static Logger logger = LoggerFactory.getLogger(JobThread.class);
 
+	// 作业编号
 	private int jobId;
+	// 作业处理器
 	private IJobHandler handler;
+	// 触发器队列
 	private LinkedBlockingQueue<TriggerParam> triggerQueue;
+	// 触发器的日志id
 	private Set<Long> triggerLogIdSet;		// avoid repeat trigger for the same TRIGGER_LOG_ID
 
 	private volatile boolean toStop = false;
 	private String stopReason;
 
+	// 是否执行作业
     private boolean running = false;    // if running job
+	// 空闲时间
 	private int idleTimes = 0;			// idel times
 
 

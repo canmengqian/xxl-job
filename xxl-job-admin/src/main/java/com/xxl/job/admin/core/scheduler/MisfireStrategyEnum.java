@@ -7,11 +7,13 @@ import com.xxl.job.admin.core.util.I18nUtil;
  */
 public enum MisfireStrategyEnum {
 
+    // 错过调度之后什么都不做
     /**
      * do nothing
      */
     DO_NOTHING(I18nUtil.getString("misfire_strategy_do_nothing")),
 
+    // 错过调度之后立即执行一次
     /**
      * fire once now
      */

@@ -32,7 +32,7 @@ public class SpringGlueFactory extends GlueFactory {
         if (XxlJobSpringExecutor.getApplicationContext() == null) {
             return;
         }
-
+        // 查找spring字段,并从spring容器中取出bean,然后进行赋值操作
         Field[] fields = instance.getClass().getDeclaredFields();
         for (Field field : fields) {
             if (Modifier.isStatic(field.getModifiers())) {

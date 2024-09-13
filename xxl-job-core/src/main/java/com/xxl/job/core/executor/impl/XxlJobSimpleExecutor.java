@@ -64,7 +64,7 @@ public class XxlJobSimpleExecutor extends XxlJobExecutor {
             }
             for (Method executeMethod : methods) {
                 XxlJob xxlJob = executeMethod.getAnnotation(XxlJob.class);
-                // registry
+                // registry 注册方法
                 registJobHandler(xxlJob, bean, executeMethod);
             }
 

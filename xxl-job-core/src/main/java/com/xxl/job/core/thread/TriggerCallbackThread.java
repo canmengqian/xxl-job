@@ -36,6 +36,7 @@ public class TriggerCallbackThread {
      */
     private LinkedBlockingQueue<HandleCallbackParam> callBackQueue = new LinkedBlockingQueue<HandleCallbackParam>();
     public static void pushCallBack(HandleCallbackParam callback){
+        // 将回调参数加入回调队列中
         getInstance().callBackQueue.add(callback);
         logger.debug(">>>>>>>>>>> xxl-job, push callback request, logId:{}", callback.getLogId());
     }
@@ -43,18 +44,18 @@ public class TriggerCallbackThread {
     /**
      * callback thread
      */
-    private Thread triggerCallbackThread;
-    private Thread triggerRetryCallbackThread;
+    private Thread triggerCallbackThread;// 回调线程
+    private Thread triggerRetryCallbackThread;// 回调重试线程
     private volatile boolean toStop = false;
     public void start() {
 
-        // valid
+        // valid, admin未配置,无法执行回调
         if (XxlJobExecutor.getAdminBizList() == null) {
             logger.warn(">>>>>>>>>>> xxl-job, executor callback config fail, adminAddresses is null.");
             return;
         }
 
-        // callback
+        // callback线程
         triggerCallbackThread = new Thread(new Runnable() {
 
             @Override
@@ -63,6 +64,7 @@ public class TriggerCallbackThread {
                 // normal callback
                 while(!toStop){
                     try {
+                        // 取出回调参数
                         HandleCallbackParam callback = getInstance().callBackQueue.take();
                         if (callback != null) {
 
@@ -165,12 +167,14 @@ public class TriggerCallbackThread {
         // callback, will retry if error
         for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
             try {
+                // 回调完成
                 ReturnT<String> callbackResult = adminBiz.callback(callbackParamList);
                 if (callbackResult!=null && ReturnT.SUCCESS_CODE == callbackResult.getCode()) {
                     callbackLog(callbackParamList, "<br>----------- xxl-job job callback finish.");
                     callbackRet = true;
                     break;
                 } else {
+                    // 回调失败
                     callbackLog(callbackParamList, "<br>----------- xxl-job job callback fail, callbackResult:" + callbackResult);
                 }
             } catch (Exception e) {
@@ -178,6 +182,7 @@ public class TriggerCallbackThread {
             }
         }
         if (!callbackRet) {
+            // 未回调成功
             appendFailCallbackFile(callbackParamList);
         }
     }
@@ -210,7 +215,7 @@ public class TriggerCallbackThread {
             return;
         }
 
-        // append file
+        // append file 序列化参数
         byte[] callbackParamList_bytes = JdkSerializeTool.serialize(callbackParamList);
 
         File callbackLogFile = new File(failCallbackFileName.replace("{x}", String.valueOf(System.currentTimeMillis())));
@@ -222,6 +227,7 @@ public class TriggerCallbackThread {
                 }
             }
         }
+        // write file
         FileUtil.writeFileContent(callbackLogFile, callbackParamList_bytes);
     }
 

@@ -30,11 +30,12 @@ public class JobCompleteHelper {
 	// ---------------------- monitor ----------------------
 
 	private ThreadPoolExecutor callbackThreadPool = null;
+	// 监听线程
 	private Thread monitorThread;
 	private volatile boolean toStop = false;
 	public void start(){
 
-		// for callback
+		// for callback 初始化线程池
 		callbackThreadPool = new ThreadPoolExecutor(
 				2,
 				20,
@@ -76,6 +77,7 @@ public class JobCompleteHelper {
 					try {
 						// 任务结果丢失处理：调度记录停留在 "运行中" 状态超过10min，且对应执行器心跳注册失败不在线，则将本地调度主动标记失败；
 						Date losedTime = DateUtil.addMinutes(new Date(), -10);
+						// 获取失联的作业
 						List<Long> losedJobIds  = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().findLostJobIds(losedTime);
 
 						if (losedJobIds!=null && losedJobIds.size()>0) {
@@ -87,7 +89,7 @@ public class JobCompleteHelper {
 								jobLog.setHandleTime(new Date());
 								jobLog.setHandleCode(ReturnT.FAIL_CODE);
 								jobLog.setHandleMsg( I18nUtil.getString("joblog_lost_fail") );
-
+								// 标记为作业失败了
 								XxlJobCompleter.updateHandleInfoAndFinish(jobLog);
 							}
 

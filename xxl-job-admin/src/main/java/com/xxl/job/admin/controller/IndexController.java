@@ -44,6 +44,10 @@ public class IndexController {
 		return "index";
 	}
 
+	/**
+	 *  chart info
+	 *  调度信息饼图
+	 */
     @RequestMapping("/chartInfo")
 	@ResponseBody
 	public ReturnT<Map<String, Object>> chartInfo(Date startDate, Date endDate) {

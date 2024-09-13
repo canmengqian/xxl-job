@@ -6,7 +6,7 @@ CREATE database if NOT EXISTS `xxl_job` default character set utf8mb4 collate ut
 use `xxl_job`;
 
 SET NAMES utf8mb4;
-
+-- 作业信息
 CREATE TABLE `xxl_job_info` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `job_group` int(11) NOT NULL COMMENT '执行器主键ID',
@@ -42,7 +42,7 @@ CREATE TABLE `xxl_job_log` (
   `executor_address` varchar(255) DEFAULT NULL COMMENT '执行器地址，本次执行的地址',
   `executor_handler` varchar(255) DEFAULT NULL COMMENT '执行器任务handler',
   `executor_param` varchar(512) DEFAULT NULL COMMENT '执行器任务参数',
-  `executor_sharding_param` varchar(20) DEFAULT NULL COMMENT '执行器任务分片参数，格式如 1/2',
+  `executor_sharding_param` varchar(20) DEFAULT NULL COMMENT '执行器任务分片参数，格式如 1/2?',
   `executor_fail_retry_count` int(11) NOT NULL DEFAULT '0' COMMENT '失败重试次数',
   `trigger_time` datetime DEFAULT NULL COMMENT '调度-时间',
   `trigger_code` int(11) NOT NULL COMMENT '调度-结果',
@@ -55,7 +55,7 @@ CREATE TABLE `xxl_job_log` (
   KEY `I_trigger_time` (`trigger_time`),
   KEY `I_handle_code` (`handle_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+-- 日志报告
 CREATE TABLE `xxl_job_log_report` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `trigger_day` datetime DEFAULT NULL COMMENT '调度-时间',
@@ -66,7 +66,7 @@ CREATE TABLE `xxl_job_log_report` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `i_trigger_day` (`trigger_day`) USING BTREE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-
+-- glue版本信息
 CREATE TABLE `xxl_job_logglue` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `job_id` int(11) NOT NULL COMMENT '任务，主键ID',
