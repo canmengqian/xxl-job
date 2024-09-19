@@ -70,11 +70,13 @@ public class TriggerCallbackThread {
 
                             // callback list param
                             List<HandleCallbackParam> callbackParamList = new ArrayList<HandleCallbackParam>();
+                            // 一次性全部取出所有 回调参数
                             int drainToNum = getInstance().callBackQueue.drainTo(callbackParamList);
                             callbackParamList.add(callback);
 
                             // callback, will retry if error
                             if (callbackParamList!=null && callbackParamList.size()>0) {
+                                // 执行回调
                                 doCallback(callbackParamList);
                             }
                         }
@@ -167,14 +169,14 @@ public class TriggerCallbackThread {
         // callback, will retry if error
         for (AdminBiz adminBiz: XxlJobExecutor.getAdminBizList()) {
             try {
-                // 回调完成
+                // 回调完成,其中一个管理器返回成功响应后,不再向其他管理器发送回调
                 ReturnT<String> callbackResult = adminBiz.callback(callbackParamList);
                 if (callbackResult!=null && ReturnT.SUCCESS_CODE == callbackResult.getCode()) {
                     callbackLog(callbackParamList, "<br>----------- xxl-job job callback finish.");
                     callbackRet = true;
                     break;
                 } else {
-                    // 回调失败
+                    // 回调失败，写入日志
                     callbackLog(callbackParamList, "<br>----------- xxl-job job callback fail, callbackResult:" + callbackResult);
                 }
             } catch (Exception e) {
@@ -182,7 +184,7 @@ public class TriggerCallbackThread {
             }
         }
         if (!callbackRet) {
-            // 未回调成功
+            // 未回调成功,写入回调日志中
             appendFailCallbackFile(callbackParamList);
         }
     }
@@ -219,8 +221,10 @@ public class TriggerCallbackThread {
         byte[] callbackParamList_bytes = JdkSerializeTool.serialize(callbackParamList);
 
         File callbackLogFile = new File(failCallbackFileName.replace("{x}", String.valueOf(System.currentTimeMillis())));
+        // 回调日志文件存在
         if (callbackLogFile.exists()) {
             for (int i = 0; i < 100; i++) {
+                // 之前的文件存在了,再次创建一个新文件？
                 callbackLogFile = new File(failCallbackFileName.replace("{x}", String.valueOf(System.currentTimeMillis()).concat("-").concat(String.valueOf(i)) ));
                 if (!callbackLogFile.exists()) {
                     break;
@@ -256,7 +260,7 @@ public class TriggerCallbackThread {
             }
 
             List<HandleCallbackParam> callbackParamList = (List<HandleCallbackParam>) JdkSerializeTool.deserialize(callbackParamList_bytes, List.class);
-
+            // 先删除再回调
             callbaclLogFile.delete();
             doCallback(callbackParamList);
         }

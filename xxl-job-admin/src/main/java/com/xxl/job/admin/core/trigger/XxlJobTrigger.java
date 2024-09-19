@@ -146,6 +146,7 @@ public class XxlJobTrigger {
         // 3、init address 获取执行器地址
         String address = null;
         ReturnT<String> routeAddressResult = null;
+        // 获取分片地址
         if (group.getRegistryList()!=null && !group.getRegistryList().isEmpty()) {
             if (ExecutorRouteStrategyEnum.SHARDING_BROADCAST == executorRouteStrategyEnum) {
                 if (index < group.getRegistryList().size()) {
@@ -154,7 +155,7 @@ public class XxlJobTrigger {
                     address = group.getRegistryList().get(0);
                 }
             } else {
-                // 路由请求
+                // 根据路由策略获取对应的执行器地址
                 routeAddressResult = executorRouteStrategyEnum.getRouter().route(triggerParam, group.getRegistryList());
                 // 请求成功,获取客户端的响应结果
                 if (routeAddressResult.getCode() == ReturnT.SUCCESS_CODE) {

@@ -26,7 +26,6 @@ import java.util.Set;
 @Component
 public class EmailJobAlarm implements JobAlarm {
     private static Logger logger = LoggerFactory.getLogger(EmailJobAlarm.class);
-
     /**
      * fail alarm
      *
@@ -41,24 +40,30 @@ public class EmailJobAlarm implements JobAlarm {
 
             // alarmContent
             String alarmContent = "Alarm Job LogId=" + jobLog.getId();
+            // job 调度未成功
             if (jobLog.getTriggerCode() != ReturnT.SUCCESS_CODE) {
                 alarmContent += "<br>TriggerMsg=<br>" + jobLog.getTriggerMsg();
             }
+            // 处理器处理代码 非200
             if (jobLog.getHandleCode()>0 && jobLog.getHandleCode() != ReturnT.SUCCESS_CODE) {
                 alarmContent += "<br>HandleCode=" + jobLog.getHandleMsg();
             }
 
-            // email info
+            // email info 获取执行器信息
             XxlJobGroup group = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().load(Integer.valueOf(info.getJobGroup()));
             String personal = I18nUtil.getString("admin_name_full");
+            // 告警内容
             String title = I18nUtil.getString("jobconf_monitor");
+            // 格式化邮件模板信息
             String content = MessageFormat.format(loadEmailJobAlarmTemplate(),
                     group!=null?group.getTitle():"null",
                     info.getId(),
                     info.getJobDesc(),
                     alarmContent);
-
+            // 获取邮件收件人,多个人 以逗号分隔
             Set<String> emailSet = new HashSet<String>(Arrays.asList(info.getAlarmEmail().split(",")));
+            // 循环发送？
+            // TODO 不群发
             for (String email: emailSet) {
 
                 // make mail
@@ -66,7 +71,9 @@ public class EmailJobAlarm implements JobAlarm {
                     MimeMessage mimeMessage = XxlJobAdminConfig.getAdminConfig().getMailSender().createMimeMessage();
 
                     MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true);
+                    // 获取发件人邮箱和名称
                     helper.setFrom(XxlJobAdminConfig.getAdminConfig().getEmailFrom(), personal);
+                    // 设置收件人
                     helper.setTo(email);
                     helper.setSubject(title);
                     helper.setText(content, true);

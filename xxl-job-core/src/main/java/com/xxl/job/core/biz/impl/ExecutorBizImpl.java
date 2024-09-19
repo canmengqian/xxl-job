@@ -37,6 +37,7 @@ public class ExecutorBizImpl implements ExecutorBiz {
             isRunningOrHasQueue = true;
         }
 
+        // 如果jobId对应线程中还有正在执行的作业就返回失败
         if (isRunningOrHasQueue) {
             return new ReturnT<String>(ReturnT.FAIL_CODE, "job thread is running or has trigger queue.");
         }
@@ -46,7 +47,7 @@ public class ExecutorBizImpl implements ExecutorBiz {
     @Override
     public ReturnT<String> run(TriggerParam triggerParam) {
         // load old：jobHandler + jobThread
-        // 从容器中根据jobId获取对应的jobThread
+        // 从容器中根据jobId获取对应的jobThread， 如何取出？
         JobThread jobThread = XxlJobExecutor.loadJobThread(triggerParam.getJobId());
         // 从线程中获取指定的jobHandler
         IJobHandler jobHandler = jobThread!=null?jobThread.getHandler():null;
@@ -56,7 +57,7 @@ public class ExecutorBizImpl implements ExecutorBiz {
         GlueTypeEnum glueTypeEnum = GlueTypeEnum.match(triggerParam.getGlueType());
         if (GlueTypeEnum.BEAN == glueTypeEnum) {
             // 取出执行器
-            // new jobhandler
+            // new jobhandler? 怎么new handler
             IJobHandler newJobHandler = XxlJobExecutor.loadJobHandler(triggerParam.getExecutorHandler());
 
             // valid old jobThread
@@ -157,7 +158,7 @@ public class ExecutorBizImpl implements ExecutorBiz {
 
     @Override
     public ReturnT<String> kill(KillParam killParam) {
-        // kill handlerThread, and create new one
+        // kill handlerThread, and create new one 移除当前执行器下对应的jobid线程
         JobThread jobThread = XxlJobExecutor.loadJobThread(killParam.getJobId());
         if (jobThread != null) {
             XxlJobExecutor.removeJobThread(killParam.getJobId(), "scheduling center kill job.");
@@ -169,7 +170,7 @@ public class ExecutorBizImpl implements ExecutorBiz {
 
     @Override
     public ReturnT<LogResult> log(LogParam logParam) {
-        // log filename: logPath/yyyy-MM-dd/9999.log
+        // log filename: logPath/yyyy-MM-dd/9999.log 读取执行器下的日志内容
         String logFileName = XxlJobFileAppender.makeLogFileName(new Date(logParam.getLogDateTim()), logParam.getLogId());
 
         LogResult logResult = XxlJobFileAppender.readLog(logFileName, logParam.getFromLineNum());

@@ -35,9 +35,11 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
         /*initJobHandlerRepository(applicationContext);*/
 
         // init JobHandler Repository (for method)
+        // 初始化所有的MethodJobHandler
         initJobHandlerMethodRepository(applicationContext);
 
         // refresh GlueFactory
+        // 初始化SpringGlueFactory
         GlueFactory.refreshInstance(1);
 
         // super start
@@ -82,11 +84,13 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
             return;
         }
         // init job handler from method
+        // 获取所有的bean名称
         String[] beanDefinitionNames = applicationContext.getBeanNamesForType(Object.class, false, true);
         for (String beanDefinitionName : beanDefinitionNames) {
 
             // get bean
             Object bean = null;
+            // 获取bean是否是懒加载
             Lazy onBean = applicationContext.findAnnotationOnBean(beanDefinitionName, Lazy.class);
             if (onBean!=null){
                 logger.debug("xxl-job annotation scan, skip @Lazy Bean:{}", beanDefinitionName);
@@ -98,6 +102,7 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
             // filter method
             Map<Method, XxlJob> annotatedMethods = null;   // referred to ：org.springframework.context.event.EventListenerMethodProcessor.processBean
             try {
+                // 获取bean对应的所有方法,带有XxlJob注解的方法
                 annotatedMethods = MethodIntrospector.selectMethods(bean.getClass(),
                         new MethodIntrospector.MetadataLookup<XxlJob>() {
                             @Override
@@ -114,9 +119,11 @@ public class XxlJobSpringExecutor extends XxlJobExecutor implements ApplicationC
 
             // generate and regist method job handler
             for (Map.Entry<Method, XxlJob> methodXxlJobEntry : annotatedMethods.entrySet()) {
+                // 反射获取到方法对象
                 Method executeMethod = methodXxlJobEntry.getKey();
                 XxlJob xxlJob = methodXxlJobEntry.getValue();
                 // regist
+
                 registJobHandler(xxlJob, bean, executeMethod);
             }
 

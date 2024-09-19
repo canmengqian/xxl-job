@@ -28,6 +28,7 @@ public class JobAlarmer implements ApplicationContextAware, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
+        // 获取所有实现JobAlarm接口的bean
         Map<String, JobAlarm> serviceBeanMap = applicationContext.getBeansOfType(JobAlarm.class);
         if (serviceBeanMap != null && serviceBeanMap.size() > 0) {
             jobAlarmList = new ArrayList<JobAlarm>(serviceBeanMap.values());
