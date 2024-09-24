@@ -17,6 +17,7 @@ public class ScriptJobHandler extends IJobHandler {
     // 作业id、更新时间、脚本、脚本类型
     private int jobId;
     private long glueUpdatetime;
+    // 脚本源代码
     private String gluesource;
     private GlueTypeEnum glueType;
 
@@ -26,12 +27,13 @@ public class ScriptJobHandler extends IJobHandler {
         this.gluesource = gluesource;
         this.glueType = glueType;
 
-        // clean old script file
+        // 执行器存放 脚本的路径
         File glueSrcPath = new File(XxlJobFileAppender.getGlueSrcPath());
         if (glueSrcPath.exists()) {
             File[] glueSrcFileList = glueSrcPath.listFiles();
             if (glueSrcFileList!=null && glueSrcFileList.length>0) {
                 for (File glueSrcFileItem : glueSrcFileList) {
+                    // 删除旧的脚本文件
                     if (glueSrcFileItem.getName().startsWith(String.valueOf(jobId)+"_")) {
                         glueSrcFileItem.delete();
                     }
@@ -54,7 +56,7 @@ public class ScriptJobHandler extends IJobHandler {
             return;
         }
 
-        // cmd
+        // cmd 前缀 例如 bash、python
         String cmd = glueType.getCmd();
 
         // make script file
@@ -65,6 +67,7 @@ public class ScriptJobHandler extends IJobHandler {
                 .concat(String.valueOf(glueUpdatetime))
                 .concat(glueType.getSuffix());
         File scriptFile = new File(scriptFileName);
+        // 创建脚本文件
         if (!scriptFile.exists()) {
             ScriptUtil.markScriptFile(scriptFileName, gluesource);
         }
@@ -80,6 +83,7 @@ public class ScriptJobHandler extends IJobHandler {
 
         // invoke
         XxlJobHelper.log("----------- script file:"+ scriptFileName +" -----------");
+        // 执行脚本
         int exitValue = ScriptUtil.execToFile(cmd, scriptFileName, logFileName, scriptParams);
 
         if (exitValue == 0) {

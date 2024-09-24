@@ -60,7 +60,7 @@ public class XxlJobTrigger {
         }
         // 设置失败重试次数
         int finalFailRetryCount = failRetryCount>=0?failRetryCount:jobInfo.getExecutorFailRetryCount();
-        // 获取执行器组
+        // 获取执行器组, 自动注册和手动注册都会被选中
         XxlJobGroup group = XxlJobAdminConfig.getAdminConfig().getXxlJobGroupDao().load(jobInfo.getJobGroup());
 
         // cover addressList

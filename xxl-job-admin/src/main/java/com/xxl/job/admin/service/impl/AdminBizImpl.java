@@ -19,16 +19,19 @@ public class AdminBizImpl implements AdminBiz {
 
     @Override
     public ReturnT<String> callback(List<HandleCallbackParam> callbackParamList) {
+        // 处理执行器回调
         return JobCompleteHelper.getInstance().callback(callbackParamList);
     }
 
     @Override
     public ReturnT<String> registry(RegistryParam registryParam) {
+        // 处理执行器的注册请求
         return JobRegistryHelper.getInstance().registry(registryParam);
     }
 
     @Override
     public ReturnT<String> registryRemove(RegistryParam registryParam) {
+        //  处理执行器的移除请求
         return JobRegistryHelper.getInstance().registryRemove(registryParam);
     }
 

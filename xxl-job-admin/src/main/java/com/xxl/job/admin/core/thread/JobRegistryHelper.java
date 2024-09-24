@@ -92,7 +92,7 @@ public class JobRegistryHelper {
 								}
 							}
 
-							// fresh group address
+							// 清除完死亡的执行器后，还需要更新存活下来的执行器地址列表
 							for (XxlJobGroup group: groupList) {
 								List<String> registryList = appAddressMap.get(group.getAppname());
 								String addressListStr = null;

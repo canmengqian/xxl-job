@@ -45,10 +45,13 @@ public class GlueFactory {
 	 */
 	public IJobHandler loadNewInstance(String codeSource) throws Exception{
 		if (codeSource!=null && codeSource.trim().length()>0) {
+			// 将脚本转成class
 			Class<?> clazz = getCodeSourceClass(codeSource);
 				if (clazz != null) {
+					// 实例化对象
 				Object instance = clazz.newInstance();
 				if (instance!=null) {
+					// 必须实现IJobHandler接口
 					if (instance instanceof IJobHandler) {
 						this.injectService(instance);
 						return (IJobHandler) instance;
@@ -70,6 +73,7 @@ public class GlueFactory {
 			// 是已经缓存过groovy 脚本
 			Class<?> clazz = CLASS_CACHE.get(md5Str);
 			if(clazz == null){
+				// 调用groovy类加载器加载脚本,并放入缓存中
 				clazz = groovyClassLoader.parseClass(codeSource);
 				CLASS_CACHE.putIfAbsent(md5Str, clazz);
 			}

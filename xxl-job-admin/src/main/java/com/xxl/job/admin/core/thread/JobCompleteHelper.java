@@ -17,6 +17,8 @@ import java.util.concurrent.*;
 /**
  * job lose-monitor instance
  *
+ *1. 处理作业回调结果线程,内部维护callbackThreadPool线程池。接收执行器的回调结果,补全日志里的handleCode，handleMsg字段。
+ * 2. 任务结果丢失处理：调度记录停留在 "运行中" 状态超过10min，且对应执行器心跳注册失败不在线，则将本地调度主动标记失败；
  * @author xuxueli 2015-9-1 18:05:56
  */
 public class JobCompleteHelper {
@@ -79,6 +81,7 @@ public class JobCompleteHelper {
 						Date losedTime = DateUtil.addMinutes(new Date(), -10);
 						// 获取失联的作业
 						List<Long> losedJobIds  = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().findLostJobIds(losedTime);
+						//TODO 长任务会标记失败？
 
 						if (losedJobIds!=null && losedJobIds.size()>0) {
 							for (Long logId: losedJobIds) {
@@ -142,6 +145,7 @@ public class JobCompleteHelper {
 		callbackThreadPool.execute(new Runnable() {
 			@Override
 			public void run() {
+				// 处理回调
 				for (HandleCallbackParam handleCallbackParam: callbackParamList) {
 					ReturnT<String> callbackResult = callback(handleCallbackParam);
 					logger.debug(">>>>>>>>> JobApiController.callback {}, handleCallbackParam={}, callbackResult={}",
@@ -154,11 +158,12 @@ public class JobCompleteHelper {
 	}
 
 	private ReturnT<String> callback(HandleCallbackParam handleCallbackParam) {
-		// valid log item
+		// valid log item 读取日志记录
 		XxlJobLog log = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().load(handleCallbackParam.getLogId());
 		if (log == null) {
 			return new ReturnT<String>(ReturnT.FAIL_CODE, "log item not found.");
 		}
+		//已经处理完成就不用再次处理了
 		if (log.getHandleCode() > 0) {
 			return new ReturnT<String>(ReturnT.FAIL_CODE, "log repeate callback.");     // avoid repeat callback, trigger child job etc
 		}
@@ -176,6 +181,7 @@ public class JobCompleteHelper {
 		log.setHandleTime(new Date());
 		log.setHandleCode(handleCallbackParam.getHandleCode());
 		log.setHandleMsg(handleMsg.toString());
+		// 更新执行结果
 		XxlJobCompleter.updateHandleInfoAndFinish(log);
 
 		return ReturnT.SUCCESS;

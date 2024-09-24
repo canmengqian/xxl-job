@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * job log report helper
- *
+ *用于生成调度报告汇总,生成总调度次数,成功次数,失败次数。每分钟调度1次。
  * @author xuxueli 2019-11-22
  */
 public class JobLogReportHelper {
@@ -106,7 +106,7 @@ public class JobLogReportHelper {
                         expiredDay.set(Calendar.MILLISECOND, 0);
                         Date clearBeforeTime = expiredDay.getTime();
 
-                        // clean expired log
+                        // clean expired log, 清理过期日志记录
                         List<Long> logIds = null;
                         do {
                             logIds = XxlJobAdminConfig.getAdminConfig().getXxlJobLogDao().findClearLogIds(0, 0, clearBeforeTime, 0, 1000);
@@ -120,6 +120,7 @@ public class JobLogReportHelper {
                     }
 
                     try {
+                        // 每分钟轮询一次
                         TimeUnit.MINUTES.sleep(1);
                     } catch (Exception e) {
                         if (!toStop) {

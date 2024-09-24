@@ -13,6 +13,8 @@ import java.util.concurrent.TimeUnit;
 
 /**
  * job monitor instance
+ * 通过轮询查找调度失败的作业,并通过作业调度池进行调度重试。重试完成后还会发出告警邮件。
+ * 1. 每次轮询调度休眠10秒,查找1000个最近失败的作业。
  *
  * @author xuxueli 2015-9-1 18:05:56
  */

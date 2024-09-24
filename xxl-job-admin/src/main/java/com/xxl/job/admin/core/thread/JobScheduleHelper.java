@@ -54,7 +54,8 @@ public class JobScheduleHelper {
                 }
                 logger.info(">>>>>>>>> init xxl-job admin scheduler success.");
 
-                // pre-read count: treadpool-size * trigger-qps (each trigger cost 50ms, qps = 1000/50 = 20)
+                // pre-read count: treadpool-size * trigger-qps (each trigger cost 50ms, qps = 1000/50 = 20) 
+                // 每秒调度20个任务
                 int preReadCount = (XxlJobAdminConfig.getAdminConfig().getTriggerPoolFastMax() + XxlJobAdminConfig.getAdminConfig().getTriggerPoolSlowMax()) * 20;
 
                 while (!scheduleThreadToStop) {
@@ -73,6 +74,7 @@ public class JobScheduleHelper {
                         connAutoCommit = conn.getAutoCommit();
                         conn.setAutoCommit(false);
 
+                        // 调度前先加锁
                         preparedStatement = conn.prepareStatement(  "select * from xxl_job_lock where lock_name = 'schedule_lock' for update" );
                         preparedStatement.execute();
 
@@ -80,12 +82,13 @@ public class JobScheduleHelper {
 
                         // 1、pre read
                         long nowTime = System.currentTimeMillis();
+                        // 当前需要调度的任务
                         List<XxlJobInfo> scheduleList = XxlJobAdminConfig.getAdminConfig().getXxlJobInfoDao().scheduleJobQuery(nowTime + PRE_READ_MS, preReadCount);
                         if (scheduleList!=null && scheduleList.size()>0) {
                             // 2、push time-ring
                             for (XxlJobInfo jobInfo: scheduleList) {
 
-                                // time-ring jump
+                                // time-ring jump 错过了任务调度的时间
                                 if (nowTime > jobInfo.getTriggerNextTime() + PRE_READ_MS) {
                                     // 2.1、trigger-expire > 5s：pass && make next-trigger-time
                                     logger.warn(">>>>>>>>>>> xxl-job, schedule misfire, jobId = " + jobInfo.getId());
